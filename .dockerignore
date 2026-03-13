@@ -1,0 +1,8 @@
+.envs
+.circleci
+build
+docker-compose.override.yml
+docker-compose.yml
+setup.cfg
+pytest.ini
+tox.ini

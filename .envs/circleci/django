@@ -1,0 +1,33 @@
+# Placeholder values only. Real secrets via CircleCI contexts.
+DEBUG=1
+SECRET_KEY=your-secret-key-here
+INCLUDE_ADMIN_URLS=True
+INCLUDE_API_URLS=True
+ADMIN_URLS_PATH="admin/"
+
+DATABASE_HOST=localhost
+DATABASE_PORT=5432
+DATABASE_USER=postgres
+DATABASE_PASS=postgres
+DATABASE_NAME=postgres
+
+# Redis
+# ------------------------------------------------------------------------------
+REDIS_URL=redis://redis:6379
+
+DJANGO_SUPERUSER_EMAIL=admin@example.com
+DJANGO_SUPERUSER_USERNAME=admin@example.com
+DJANGO_SUPERUSER_PASSWORD=admin
+
+AWS_STORAGE_BUCKET_NAME=local-user-uploads
+
+AWS_S3_ENDPOINT_URL=http://localhost:4566
+AWS_S3_CUSTOM_DOMAIN=localhost:4566/local-user-uploads
+AWS_S3_URL_PROTOCOL=http:
+AWS_S3_SECURE_URLS=false
+
+AWS_ACCESS_KEY_ID=localstack
+AWS_SECRET_ACCESS_KEY=secret
+
+CORS_ALLOWED_ORIGINS="http://localhost:3000,http://127.0.0.1:3000"
+CSRF_TRUSTED_ORIGINS="http://localhost:3000,http://127.0.0.1:3000"

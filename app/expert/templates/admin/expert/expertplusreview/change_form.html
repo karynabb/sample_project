@@ -1,0 +1,30 @@
+{% extends "admin/change_form.html" %}
+
+{% block extrahead %}
+    {{ block.super }}
+    <script type="text/javascript">
+        document.addEventListener("DOMContentLoaded", function() {
+            const selects = document.querySelectorAll('select');
+
+            selects.forEach(function(select) {
+                const options = select.querySelectorAll('option');
+                options.forEach(function(option) {
+                    if (!option.textContent.trim()) {
+                        option.remove();
+                    }
+                });
+            });
+        });
+    </script>
+{% endblock %}
+
+{% block after_field_sets %}
+    {% if related_questionnaire %}
+        <div class="related-questionnaire">
+            <h2>Related Questionnaire</h2>
+            <p>
+                {{ related_questionnaire.answers }}
+            </p>
+        </div>
+    {% endif %}
+{% endblock %}

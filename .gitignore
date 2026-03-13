@@ -1,0 +1,30 @@
+# Local env overrides (never commit real secrets)
+.env
+.env.local
+.envs/local/django.local
+*.local
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.eggs/
+.venv/
+venv/
+
+# IDE / OS
+.idea/
+__MACOSX/
+*.swp
+.DS_Store
+
+# Test / coverage
+.coverage
+htmlcov/
+.pytest_cache/
+.tox/
+
+# Build / dist
+dist/
+build/
+*.egg

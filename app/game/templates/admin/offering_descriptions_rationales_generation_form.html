@@ -1,0 +1,8 @@
+{% extends "admin/base_site.html" %}
+{% block content %}
+<h1>Provide the number of questionnaires to include in the generation of offering descriptions and rationales</h1>
+<form method="post">{% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit" class="button">Submit</button>
+</form>
+{% endblock %}

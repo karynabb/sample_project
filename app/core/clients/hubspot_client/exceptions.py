@@ -1,0 +1,2 @@
+class ContactDoesNotExistException(Exception):
+    pass

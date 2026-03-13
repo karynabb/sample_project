@@ -1,0 +1,72 @@
+version: "3.8"
+
+x-django-common: &django-common
+  build:
+    context: .
+    target: dev
+    ssh:
+      - default
+  volumes:
+    - ./:/srv/http
+    - ${SSH_AUTH_SOCK}:/ssh-agent
+  env_file:
+    - .envs/compose/django
+  environment:
+    - SSH_AUTH_SOCK=/ssh-agent
+  depends_on:
+    - postgres
+    - localstack
+
+volumes:
+  postgres_data:
+  localstack_data:
+
+services:
+  django:
+    <<: *django-common
+    command: ["python", "manage.py", "runserver", "0:8000"]
+    ports:
+      - "8000:8000"
+
+  celery:
+    <<: *django-common
+    entrypoint: ["celery"]
+    command: ["--app=app.celery.app", "worker"]
+
+  celery-beat:
+    <<: *django-common
+    entrypoint: ["celery"]
+    command: ["--app=app.celery.app", "beat"]
+
+  celery-flower:
+    <<: *django-common
+    entrypoint: ["celery"]
+    command: ["--app=app.celery.app", "flower"]
+    ports:
+      - "5555:5555"
+
+  redis:
+    image: redis:latest
+    ports:
+      - "6379:6379"
+
+  postgres:
+    image: postgres:15
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    env_file:
+      - .envs/compose/postgres
+
+  localstack:
+    image: localstack/localstack
+    hostname: localstack
+    environment:
+      - SERVICES=s3
+      - DATA_DIR=/tmp/localstack/data
+    ports:
+      - "4566:4566"
+    volumes:
+      - localstack_data:/tmp/localstack
+      - ./compose/localstack/docker-entrypoint-initaws.d:/docker-entrypoint-initaws.d

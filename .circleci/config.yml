@@ -1,0 +1,85 @@
+version: 2.1
+
+# CI config uses generic orb/context names. Replace with your org's orb and contexts.
+orbs:
+  custom: your-org/custom-circleci-orb@1.0.0
+
+workflows:
+  build:
+    jobs:
+      - custom/build_django:
+          name: build
+          django_settings_module: app.settings          
+          executor:
+            name: custom/python_postgres
+            python_tag: "3.11"
+            postgres_tag: "14.1"
+          test_tool: pytest
+          context:
+            - project-slack-notifications
+          before_checkout:
+            - add_ssh_keys:
+                fingerprints:
+                  - "xx:xx:xx:xx:xx:xx:xx:xx:xx:xx:xx:xx:xx:xx:xx:xx"
+          filters:
+            branches:
+              ignore:
+                - /renovate\/.*/
+      # Builds triggered by renovate do not have access to contexts
+      - custom/build_django:
+          name: build_renovate
+          django_settings_module: app.settings          
+          executor:
+            name: custom/python_postgres
+            python_tag: "3.11"
+            postgres_tag: "14.1"
+          test_tool: pytest
+          disable_slack_notifications: true
+          before_checkout:
+            - add_ssh_keys:
+                fingerprints:
+                  - "xx:xx:xx:xx:xx:xx:xx:xx:xx:xx:xx:xx:xx:xx:xx:xx"
+          filters:
+            branches:
+              only:
+                - /renovate\/.*/
+      - custom/publish_django:
+          executor:
+            name: custom/python
+            tag: "3.11"
+          s3_artifacts_bucket: project-artifacts-bucket
+          django_settings_module: app.settings
+          ecr_repository: project-backend
+          aws_account_id: "000000000000"
+          aws_region: us-east-1
+          aws_oidc_role: ProjectCircleCi-ArtifactUploadRole
+          before_checkout:
+            - add_ssh_keys:
+                fingerprints:
+                  - "xx:xx:xx:xx:xx:xx:xx:xx:xx:xx:xx:xx:xx:xx:xx:xx"
+            - custom/export_ssh_key_path:
+                fingerprint: "xx:xx:xx:xx:xx:xx:xx:xx:xx:xx:xx:xx:xx:xx:xx:xx"
+          docker_extra_build_args: "--ssh default=$SSH_KEY_PATH"
+          context:
+            - project-artifact-upload
+            - project-slack-notifications
+          requires:
+            - build
+          filters:
+            branches:
+              only:
+                - main
+                - /hotfix\/.*/
+      - custom/update_bom:
+          app_names: Backend
+          delivery_repo: project-delivery
+          branch: test
+          context:
+            - project-github-bot
+            - project-slack-notifications
+          requires:
+            - custom/publish_django
+          filters:
+            branches:
+              only:
+                - main

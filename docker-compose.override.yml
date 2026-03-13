@@ -1,0 +1,7 @@
+
+services:
+  django:
+    build:
+      args:
+        HOST_USER_ID: "1000"
+        HOST_GROUP_ID: "100"
